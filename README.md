@@ -24,7 +24,7 @@ In host machine terminal:
 
 ```bash
 mkdir -p ~/VM && cd $_
-git clone --depth 1 https://github.com/stemar/vagrant-debian-10.git debian-10
+git clone --depth=1 https://github.com/stemar/vagrant-debian-10.git debian-10
 cd ~/VM/debian-10
 vagrant up --provision
 vagrant ssh
@@ -56,7 +56,7 @@ vagrant ssh
     - Avoid writing a password a zillion times through development.
 - Adminer served at `http://localhost:8000/adminer.php`.
 - Development-specific `php.ini` settings from `.htaccess` for all local websites.
-- Python 2 & 3 installed.
+- Python 3 installed.
 
 ---
 
@@ -172,6 +172,7 @@ lsb_release -a
 apache2 -v
 mysql -V
 php -v
+python3 --version
 svn --version
 git --version
 openssl version
