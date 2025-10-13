@@ -100,5 +100,5 @@ git --version
 apache2 -v | head -n1
 mysql -V
 php -v | head -n1
-python2 --version 2>/dev/stdout
+python --version
 python3 --version
