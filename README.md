@@ -3,7 +3,7 @@
 Make a Vagrant box with Debian 10 LAMP stack, plus configure it for development.
 
 - Host: Linux or Mac.
-- Guest: Debian 10, Apache 2.4, MariaDB 10.6, PHP 8.1, Python 3, Git 2.
+- Guest: Debian 10, Apache 2.4, MariaDB 10.6, PHP 8.1, Python 2.7 & 3.7, Git 2+.
 
 - Leave code and version control files physically outside the VM while virtually accessing them inside the VM.
 - Use any GUI tool (IDEs, browsers, database administration applications, Git clients) outside the VM to access code and data inside the VM.
@@ -56,7 +56,6 @@ vagrant ssh
     - Avoid writing a password a zillion times through development.
 - Adminer served at `http://localhost:8000/adminer.php`.
 - Development-specific `php.ini` settings from `.htaccess` for all local websites.
-- Python 3 installed.
 
 ---
 
@@ -169,7 +168,7 @@ Check versions:
 
 ```bash
 lsb_release -a
-apache2 -v
+sudo apache2 -v
 mysql -V
 php -v
 python3 --version
@@ -182,8 +181,8 @@ curl --version
 Check Apache configuration:
 
 ```bash
-apachectl configtest
-apachectl -V
+sudo apachectl configtest
+sudo apachectl -V
 cat /etc/hosts
 cat /etc/apache2/apache2.conf
 cat /etc/apache2/envvars
