@@ -4,13 +4,14 @@ echo '==> Setting time zone to '$(cat /etc/timezone)
 
 echo '==> Updating Debian repositories'
 
+cp /vagrant/config/sources.list /etc/apt/sources.list
 apt-get -q=2 update
 
 echo '==> Installing Linux tools'
 
 cp /vagrant/config/bash_aliases /home/vagrant/.bash_aliases
 chown vagrant:vagrant /home/vagrant/.bash_aliases
-apt-get -q=2 install software-properties-common tree zip unzip pv whois &>/dev/null
+apt-get -q=2 install software-properties-common apt-transport-https tree zip unzip pv whois &>/dev/null
 
 echo '==> Installing Git and Subversion'
 
@@ -38,22 +39,26 @@ echo '==> Installing MariaDB'
 
 DEBIAN_FRONTEND=noninteractive apt-get -q=2 install mariadb-server &>/dev/null
 
-echo '==> Setting PHP 8.1 repository'
+echo '==> Setting PHP 7.3 repository'
 
-apt-get -q=2 install apt-transport-https &>/dev/null
-curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg
-cp /vagrant/config/php.list /etc/apt/sources.list.d/php.list
+#curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg
+#cp /vagrant/config/php.list /etc/apt/sources.list.d/php.list
 apt-get -q=2 update
 
 echo '==> Installing PHP'
 
-apt-get -q=2 install php8.1 php-pear php8.1-cli libapache2-mod-php8.1 libphp8.1-embed \
-    php8.1-bcmath php8.1-bz2 php8.1-curl php8.1-fpm php8.1-gd php8.1-imap php8.1-intl \
-    php8.1-mbstring php8.1-mysql php8.1-mysqlnd php8.1-pgsql php8.1-pspell php8.1-readline \
-    php8.1-soap php8.1-sqlite3 php8.1-tidy php8.1-xdebug php8.1-xml php8.1-xmlrpc php8.1-yaml php8.1-zip &>/dev/null
+# apt-get -q=2 install php8.1 php-pear php8.1-cli libapache2-mod-php8.1 libphp8.1-embed \
+#     php8.1-bcmath php8.1-bz2 php8.1-curl php8.1-fpm php8.1-gd php8.1-imap php8.1-intl \
+#     php8.1-mbstring php8.1-mysql php8.1-mysqlnd php8.1-pgsql php8.1-pspell php8.1-readline \
+#     php8.1-soap php8.1-sqlite3 php8.1-tidy php8.1-xdebug php8.1-xml php8.1-xmlrpc php8.1-yaml php8.1-zip &>/dev/null
+apt-get -q=2 install php php-pear php-cli libapache2-mod-php libphp-embed \
+    php-bcmath php-bz2 php-curl php-fpm php-gd php-imap php-intl \
+    php-mbstring php-mysql php-mysqlnd php-pgsql php-pspell php-readline \
+    php-soap php-sqlite3 php-tidy php-xdebug php-xml php-xmlrpc php-yaml php-zip &>/dev/null
 a2dismod mpm_event &>/dev/null
 a2enmod mpm_prefork &>/dev/null
-a2enmod php8.1 &>/dev/null
+# a2enmod php8.1 &>/dev/null
+a2enmod php &>/dev/null
 cp /vagrant/config/php.ini.htaccess /var/www/.htaccess
 PHP_ERROR_REPORTING_INT=$(php -r 'echo '"$PHP_ERROR_REPORTING"';')
 sed -i 's|PHP_ERROR_REPORTING_INT|'$PHP_ERROR_REPORTING_INT'|' /var/www/.htaccess
@@ -61,15 +66,15 @@ sed -i 's|PHP_ERROR_REPORTING_INT|'$PHP_ERROR_REPORTING_INT'|' /var/www/.htacces
 echo '==> Installing Adminer'
 
 if [ ! -d /usr/share/adminer ]; then
-    mkdir -p /usr/share/adminer/plugins
+    mkdir -p /usr/share/adminer/adminer-plugins
     curl -LsS https://www.adminer.org/latest-en.php -o /usr/share/adminer/latest-en.php
-    curl -LsS https://raw.githubusercontent.com/vrana/adminer/master/plugins/plugin.php -o /usr/share/adminer/plugins/plugin.php
-    curl -LsS https://raw.githubusercontent.com/vrana/adminer/master/plugins/login-password-less.php -o /usr/share/adminer/plugins/login-password-less.php
-    curl -LsS https://raw.githubusercontent.com/vrana/adminer/master/plugins/dump-json.php -o /usr/share/adminer/plugins/dump-json.php
-    curl -LsS https://raw.githubusercontent.com/vrana/adminer/master/plugins/pretty-json-column.php -o /usr/share/adminer/plugins/pretty-json-column.php
+    curl -LsS https://raw.githubusercontent.com/vrana/adminer/master/plugins/login-password-less.php -o /usr/share/adminer/adminer-plugins/login-password-less.php
+    curl -LsS https://raw.githubusercontent.com/vrana/adminer/master/plugins/dump-json.php -o /usr/share/adminer/adminer-plugins/dump-json.php
+    curl -LsS https://raw.githubusercontent.com/vrana/adminer/master/plugins/pretty-json-column.php -o /usr/share/adminer/adminer-plugins/pretty-json-column.php
     curl -LsS https://raw.githubusercontent.com/vrana/adminer/master/designs/nicu/adminer.css -o /usr/share/adminer/adminer.css
 fi
 cp /vagrant/config/adminer.php /usr/share/adminer/adminer.php
+cp /vagrant/config/adminer-plugins.php /usr/share/adminer/adminer-plugins.php
 cp /vagrant/config/adminer.conf /etc/apache2/conf-available/adminer.conf
 sed -i 's|FORWARDED_PORT_80|'$FORWARDED_PORT_80'|' /etc/apache2/conf-available/adminer.conf
 a2enconf adminer &>/dev/null
